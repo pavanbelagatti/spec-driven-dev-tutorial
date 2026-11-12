@@ -1,5 +1,7 @@
 """HTTP endpoints for the notification service."""
 
+import os
+
 from flask import Blueprint, current_app, jsonify, request
 
 bp = Blueprint("notifications", __name__)
@@ -15,7 +17,7 @@ def _email_from_request():
 
 @bp.get("/health")
 def health():
-    return jsonify(status="ok")
+    return jsonify(status="ok", version=os.environ.get("APP_VERSION", "dev"))
 
 
 @bp.post("/password-reset")

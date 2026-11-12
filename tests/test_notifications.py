@@ -14,8 +14,14 @@ def client(sender):
     return create_app(email_sender=sender).test_client()
 
 
-def test_health(client):
-    assert client.get("/health").get_json() == {"status": "ok"}
+def test_health_defaults_to_dev_version(client, monkeypatch):
+       monkeypatch.delenv("APP_VERSION", raising=False)
+       assert client.get("/health").get_json() == {"status": "ok", "version": "dev"}
+
+
+def test_health_reports_app_version(client, monkeypatch):
+       monkeypatch.setenv("APP_VERSION", "1.2.3")
+       assert client.get("/health").get_json() == {"status": "ok", "version": "1.2.3"}
 
 
 def test_password_reset_sends_email(client, sender):
